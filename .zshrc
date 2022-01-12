@@ -44,14 +44,11 @@ zinit snippet 'https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/fd/
 zinit ice mv="*.zsh -> _exa" as="completion"
 zinit snippet 'https://github.com/ogham/exa/blob/master/completions/zsh/_exa'
 
-# lvim替代vim
+# 常用命令替代品
+alias top=htop
 alias vim=lvim
-
-# exa替代ls
 DISABLE_LS_COLORS=true
 alias ls=exa
-
-# rg替代grep
 alias grep=rg
 
 # 配置 fzf 使用 fd
