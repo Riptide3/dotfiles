@@ -50,6 +50,7 @@ alias vim=lvim
 DISABLE_LS_COLORS=true
 alias ls=exa
 alias grep=rg
+alias cat=bat
 
 # 配置 fzf 使用 fd
 export FZF_DEFAULT_COMMAND='fd --type f'
