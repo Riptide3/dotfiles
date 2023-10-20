@@ -1,28 +1,22 @@
-### Added by Zinit's installer
-if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
-    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
-    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
-    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
-        print -P "%F{33} %F{34}Installation successful.%f%b" || \
-        print -P "%F{160} The clone has failed.%f%b"
-fi
-
-source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+# Zinit
+source "$HOMEBREW_PREFIX/opt/zinit/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
-### End of Zinit's installer chunk
 
 # PATH
 export PATH=$PATH:~/.local/bin
 
+# JAVA
+export JAVA_HOME=$(/usr/libexec/java_home)
+
 # llvm
-export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
-export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
+export PATH="$HOMEBREW_PREFIX/opt/llvm/bin:$PATH"
+export LDFLAGS="-L$HOMEBREW_PREFIX/opt/llvm/lib"
+export CPPFLAGS="-I$HOMEBREW_PREFIX/opt/llvm/include"
 
 # proxy
-alias proxy='export all_proxy=socks5://127.0.0.1:7890'
-alias unproxy='unset all_proxy'
+alias proxy='export https_proxy=http://127.0.0.1:7890;export http_proxy=http://127.0.0.1:7890;export all_proxy=socks5://127.0.0.1:7890'
+alias unproxy='unset https_proxy http_proxy all_proxy'
 
 # 常用命令替代品
 alias top='htop'
@@ -47,8 +41,6 @@ zi snippet OMZ::plugins/extract
 zi ice lucid wait"1"
 zi snippet OMZ::plugins/git/git.plugin.zsh
 
-zpcompinit; zpcdreplay
-
 # 加载命令的补全等
 zi ice mv="*.zsh -> _fzf" as="completion"
 zi snippet 'https://github.com/junegunn/fzf/blob/master/shell/completion.zsh'
@@ -57,8 +49,11 @@ zi ice as="completion"
 zi snippet 'https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/fd/_fd'
 zi ice as="completion"
 zi snippet 'https://github.com/ogham/exa/blob/master/completions/zsh/_exa'
-zi ice lucid wait"0" depth"1"
+zi ice lucid wait"0" depth"1" blockf
 zi light zsh-users/zsh-completions
+zi fpath -f "$HOMEBREW_PREFIX/share/zsh/site-functions"
+
+zpcompinit; zpcdreplay
 
 # 配置 fzf 使用 fd
 export FZF_DEFAULT_COMMAND='fd --type f'
@@ -114,14 +109,14 @@ zi light sindresorhus/pure
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/homebrew/Caskroom/miniforge/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('$HOMEBREW_PREFIX/Caskroom/miniforge/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh" ]; then
-        . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh"
+    if [ -f "$HOMEBREW_PREFIX/Caskroom/miniforge/base/etc/profile.d/conda.sh" ]; then
+        . "$HOMEBREW_PREFIX/Caskroom/miniforge/base/etc/profile.d/conda.sh"
     else
-        export PATH="/opt/homebrew/Caskroom/miniforge/base/bin:$PATH"
+        export PATH="$HOMEBREW_PREFIX/Caskroom/miniforge/base/bin:$PATH"
     fi
 fi
 unset __conda_setup
@@ -132,11 +127,12 @@ export NVM_DIR="$HOME/.nvm"
 # This lazy loads nvm
 nvm() {
   unset -f nvm
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use # This loads nvm
+  # This loads nvm
+  [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" --no-use
   nvm $@
 }
 # This loads nvm bash_completion
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+[ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"
 # This resolves the default node version
 DEFAULT_NODE_VER="$( (< "$NVM_DIR/alias/default" || < ~/.nvmrc) 2> /dev/null)"
 while [ -s "$NVM_DIR/alias/$DEFAULT_NODE_VER" ] && [ ! -z "$DEFAULT_NODE_VER" ]; do
@@ -150,4 +146,3 @@ if [ ! -z "$DEFAULT_NODE_VER_PATH" ]; then
 fi
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
